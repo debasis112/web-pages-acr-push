@@ -31,7 +31,7 @@ jobs:
 
       # Step 3: Login to Azure Container Registry
       - name: Login to ACR
-        run: az acr login --name debacrregistry --username ${{ secrets.ACR_CLIENT_ID }} --password ${{ secrets.ACR_CLIENT_SECRET }}
+        run: az acr login --service-principal --username ${{ secrets.ACR_CLIENT_ID }} --password ${{ secrets.ACR_CLIENT_SECRET }}
 
       # # Step 4: Pull or push a Docker image (example)
       # - name: Build and push Docker image
