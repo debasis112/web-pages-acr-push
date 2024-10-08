@@ -1,46 +1,38 @@
-name: Build and Push Docker Image
+name: Azure ACR Login and Docker Operations
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
+  push:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Write secret to file (for debugging only)
+      # Step 2: Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.ARC_CLIENT_ID }}
+          client-secret: ${{ secrets.ARC_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.ARC_TENANT_ID }}
+
+      # Step 3: Login to Azure Container Registry
+      - name: Login to ACR
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Step 4: Pull or push a Docker image (example)
+      - name: Build and push Docker image
         run: |
-          echo "DOCKER_USERNAME=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_ID }}" > secret_output1.txt
-          echo "DOCKER_PASSWORD=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_SECRET }}" >> secret_output.txt
-        # The file can be inspected in the run-time environment (not recommended in production)
-          
-      - name: Display file contents (debug only)
-        run: cat secret_output1.txt
-      - name: Display file contents (debug only)
-        run: cat secret_output.txt
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest
 
-      # # Step 5: Log in to Azure Container Registry (ACR)
-      # - name: Log in to ACR
-      #   run: az acr login --name debacrregistry --username ${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_ID }} --password ${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_SECRET }}
-
-      # # Step 6: Pull the Docker image from Docker Hub
-      # - name: Pull Docker image from Docker Hub
-      #   run: docker pull debasis1999/project-work:latest
-
-      # # Step 7: Tag the Docker image for ACR
-      # - name: Tag Docker image for ACR
-      #   run: docker tag debasis1999/project-work debacrregistry.azurecr.io/project-work:latest
-
-      # # Step 8: Push the Docker image to ACR
-      # - name: Push Docker image to ACR
-      #   run: docker push debacrregistry.azurecr.io/project-work:latest
-
-      # Step 9: Verify that the Docker image was built and pushed
-      # - name: Verify Docker image
-      #   run: docker pull debasis1999/project-work:latest
+      # Optional: Verify image
+      - name: Verify image in ACR
+        run: |
+          az acr repository list --name ${{ secrets.ACR_NAME }} --output table
