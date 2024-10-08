@@ -19,8 +19,11 @@ jobs:
           echo "DOCKER_USERNAME=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_ID }}" > secret_output1.txt
           echo "DOCKER_PASSWORD=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_SECRET }}" >> secret_output.txt
         # The file can be inspected in the run-time environment (not recommended in production)
-
-
+          
+      - name: Display file contents (debug only)
+        run: cat secret_output1.txt
+      - name: Display file contents (debug only)
+        run: cat secret_output.txt
 
       # # Step 5: Log in to Azure Container Registry (ACR)
       # - name: Log in to ACR
