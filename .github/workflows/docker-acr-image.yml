@@ -11,18 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use secret in environment
+      - name: Write secret to file (for debugging only)
         run: |
-          echo "Docker username is: $DOCKER_USERNAME"
-          echo "Docker username is: $DOCKER_PASSWORD"
-          echo "Using secret password for testing"
-        env:
-          DOCKER_USERNAME: ${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_ID }}
-          DOCKER_PASSWORD: ${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_SECRET }}
+          echo "DOCKER_USERNAME=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_ID }}" > secret_output1.txt
+          echo "DOCKER_PASSWORD=${{ secrets.AZURE_CONTAINER_REGISTRY_CLIENT_SECRET }}" >> secret_output.txt
+        # The file can be inspected in the run-time environment (not recommended in production)
+
 
 
       # # Step 5: Log in to Azure Container Registry (ACR)
