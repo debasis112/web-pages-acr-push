@@ -1,0 +1,43 @@
+name: Pull Docker Image and Push to ACR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Log in to Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZ_INFRA_SPN_CREDENTIALS }}
+
+      # Step 2: Log in to Azure Container Registry (ACR).
+      - name: Log in to ACR
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      # Step 3: Pull the Docker image from Docker Hub
+      - name: Pull Docker image from Docker Hub
+        run: docker pull ${{ secrets.DOCKER_REPO }}:4a91df2
+
+      # Step 4: Tag the Docker image for ACR
+      - name: Tag Docker image for ACR
+        run: docker tag ${{ secrets.DOCKER_REPO }}:4a91df2 ${{ secrets.ACR_NAME }}.azurecr.io/project-work:v1.0.0
+
+
+      # Step 5: Push the Docker image to ACR
+      - name: Push Docker image to ACR
+        run: docker push ${{ secrets.ACR_NAME }}.azurecr.io/project-work:v1.0.0
+
+      # Step 6: ACR repository verify
+      - name: Verify image in ACR
+        run: |
+          az acr repository list --name ${{ secrets.ACR_NAME }} --output table
+      # Step 7: ACR repository tag verify
+      - name: List tags in ACR repository
+        run: az acr repository show-tags --name ${{ secrets.ACR_NAME }} --repository project-work --output table
+        
