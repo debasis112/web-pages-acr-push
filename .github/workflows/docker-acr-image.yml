@@ -1,11 +1,9 @@
 name: Azure ACR Login and Docker Operations
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -20,21 +18,21 @@ jobs:
       # - name: Login to Azure
       #   uses: azure/login@v1
       #   with:
-      #     client-id: ${{ secrets.ARC_CLIENT_ID }}
-      #     client-secret: ${{ secrets.ARC_CLIENT_SECRET }}
-      #     tenant-id: ${{ secrets.ARC_TENANT_ID }}
+      #     client-id: ${{ secrets.ACR_CLIENT_ID }}
+      #     client-secret: ${{ secrets.ACR_CLIENT_SECRET }}
+      #     tenant-id: ${{ secrets.ACR_TENANT_ID }}
 
       # Step 3: Login to Azure Container Registry
       - name: Login to ACR
-        run: az acr login --name ${{ secrets.ACR_NAME }} --username ${{ secrets.ARC_CLIENT_ID }} --password ${{ secrets.ARC_CLIENT_SECRET }}
+        run: az acr login --name ${{ secrets.ACR_NAME }} --username ${{ secrets.ACR_CLIENT_ID }} --password ${{ secrets.ACR_CLIENT_SECRET }}
 
-      # Step 4: Pull or push a Docker image (example)
-      - name: Build and push Docker image
-        run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest
+      # # Step 4: Pull or push a Docker image (example)
+      # - name: Build and push Docker image
+      #   run: |
+      #     docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest .
+      #     docker push ${{ secrets.ACR_NAME }}.azurecr.io/my-image:latest
 
-      # Optional: Verify image
-      - name: Verify image in ACR
-        run: |
-          az acr repository list --name ${{ secrets.ACR_NAME }} --output table
+      # # Optional: Verify image
+      # - name: Verify image in ACR
+      #   run: |
+      #     az acr repository list --name ${{ secrets.ACR_NAME }} --output table
