@@ -1,4 +1,4 @@
-name: Pull Docker Image and Push to ACR.
+name: Pull Docker Image and Push to ACR
 
 on:
   push:
